@@ -1,8 +1,9 @@
-﻿using System;
+﻿using PhyndData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PhyndData
+namespace PhyndLogic
 {
     public class State
     {

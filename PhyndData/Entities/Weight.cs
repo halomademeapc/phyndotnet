@@ -13,7 +13,5 @@ namespace PhyndData.Entities
         [Range(0, BOARD_SIZE)]
         public int NextMove { get; set; }
         public float Rank { get; set; }
-
-        public State GetState() => new State(Scenario);
     }
 }

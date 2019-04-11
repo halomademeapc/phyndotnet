@@ -1,4 +1,4 @@
-﻿namespace PhyndData
+﻿namespace PhyndLogic
 {
     public class Coordinate
     {

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhyndWeb", "PhyndWeb\PhyndW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhyndData", "PhyndData\PhyndData.csproj", "{AA3C563B-0976-4D1E-9F83-DAB37F9EB875}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhyndLogic", "PhyndLogic\PhyndLogic.csproj", "{EA413657-5615-4A3D-AF75-EFBBA7FD716C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{AA3C563B-0976-4D1E-9F83-DAB37F9EB875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA3C563B-0976-4D1E-9F83-DAB37F9EB875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA3C563B-0976-4D1E-9F83-DAB37F9EB875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA413657-5615-4A3D-AF75-EFBBA7FD716C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA413657-5615-4A3D-AF75-EFBBA7FD716C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA413657-5615-4A3D-AF75-EFBBA7FD716C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA413657-5615-4A3D-AF75-EFBBA7FD716C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
