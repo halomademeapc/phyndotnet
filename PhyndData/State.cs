@@ -15,6 +15,7 @@ namespace PhyndData
 
         public State(string serialized)
         {
+            serialized = serialized.ToUpper();
             if (serialized.Length != SIDE_SIZE * SIDE_SIZE)
             {
                 throw new FormatException();
@@ -32,13 +33,25 @@ namespace PhyndData
             }
         }
 
-        private Player?[][] Positions { get; set; } = Enumerable.Range(SIDE_SIZE, 0).Select(i => new Player?[SIDE_SIZE]).ToArray();
+        private Player?[] _Positions { get; set; } = new Player?[SIDE_SIZE * SIDE_SIZE];
 
-        public IEnumerable<Player?> LinearizedPositions => Positions.SelectMany(p => p);
+        public Player?[] Positions => _Positions;
 
-        public void PlayPosition(Player player, int x, int y) => Positions[x][y] = player;
+        public void PlayPosition(Player player, int x, int y) => PlayPosition(player, new Coordinate(x, y));
 
-        public override string ToString() => string.Concat(LinearizedPositions.Select(PlayerToChar));
+        public void PlayPosition(Player player, Coordinate coord) => _Positions[CoordinateToIndex(coord)] = player;
+
+        public override string ToString() => string.Concat(_Positions.Select(PlayerToChar));
+
+        public IEnumerable<Coordinate> AvailableCoordinates => AvailableIndices.Select(IndexToCoordinate);
+
+        public IEnumerable<int> AvailableIndices => _Positions.Zip(Enumerable.Range(0, _Positions.Count()), (pos, index) => new
+        {
+            Position = pos,
+            Index = index
+        }).Where(c => !c.Position.HasValue)
+        .Select(c => c.Index);
+
 
         public State Normalize()
         {
@@ -63,5 +76,13 @@ namespace PhyndData
                     return null;
             }
         }
+
+        private int CoordinateToIndex(Coordinate c) => c.y * SIDE_SIZE + c.x;
+
+        private Coordinate IndexToCoordinate(int i) => new Coordinate
+        {
+            x = i % SIDE_SIZE,
+            y = i / SIDE_SIZE
+        };
     }
 }
