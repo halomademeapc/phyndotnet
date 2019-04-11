@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PhyndData
 {
@@ -17,14 +16,19 @@ namespace PhyndData
         public State(string serialized)
         {
             if (serialized.Length != SIDE_SIZE * SIDE_SIZE)
+            {
                 throw new FormatException();
+            }
+
             for (int i = 0; i < serialized.Length; i++)
             {
                 var xIndex = i % SIDE_SIZE;
                 var yIndex = i / SIDE_SIZE;
                 var player = CharToPlayer(serialized[i]);
                 if (player.HasValue)
+                {
                     PlayPosition(player.Value, xIndex, yIndex);
+                }
             }
         }
 
