@@ -12,6 +12,8 @@ namespace PhyndData.Entities
         public string Scenario { get; set; }
         [Range(0, BOARD_SIZE)]
         public int NextMove { get; set; }
+        [Range(0, float.MaxValue)]
         public float Rank { get; set; }
+        public int Attempts { get; set; }
     }
 }

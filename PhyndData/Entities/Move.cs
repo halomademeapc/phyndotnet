@@ -11,6 +11,7 @@ namespace PhyndData.Entities
         public Guid GameId { get; set; }
         public Player Player { get; set; }
         public int Position { get; set; }
+        public int Progress { get; set; }
 
         public virtual Game Game { get; set; }
     }

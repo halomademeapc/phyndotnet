@@ -42,6 +42,8 @@ namespace PhyndLogic
 
         public void PlayPosition(Player player, Coordinate coord) => _Positions[CoordinateToIndex(coord)] = player;
 
+        public void PlayPosition(Player player, int index) => _Positions[index] = player;
+
         public override string ToString() => string.Concat(_Positions.Select(PlayerToChar));
 
         public IEnumerable<Coordinate> AvailableCoordinates => AvailableIndices.Select(IndexToCoordinate);
@@ -53,11 +55,33 @@ namespace PhyndLogic
         }).Where(c => !c.Position.HasValue)
         .Select(c => c.Index);
 
+        public Player? GetWinner()
+        {
+            var iterator = Enumerable.Range(0, SIDE_SIZE);
+            for (int x = 0; x < SIDE_SIZE; x++)
+            {
+                // check horizontal
+                if (AreMatch(iterator.Select(i => Positions[i + (SIDE_SIZE * x)])))
+                    return Positions[SIDE_SIZE * x];
+                // check vertical
+                if (AreMatch(iterator.Select(i => Positions[(i * SIDE_SIZE) + x])))
+                    return Positions[x];
+            }
+            // check diagonal
+            if (AreMatch(iterator.Select(i => Positions[(SIDE_SIZE - 1) * (i + 1)])))
+                return Positions[SIDE_SIZE - 1];
+            if (AreMatch(iterator.Select(i => Positions[(SIDE_SIZE + 1) * (i)])))
+                return Positions[SIDE_SIZE + 1];
+            return null;
+        }
 
         public State Normalize()
         {
             return this;
         }
+
+        private bool AreMatch(IEnumerable<Player?> players) => !players.Any(p => !p.HasValue)
+            && (!players.Any(p => p.Value == Player.Computer) || !players.Any(p => p.Value == Player.Human));
 
         private char PlayerToChar(Player? player) => !player.HasValue
             ? NULL_SYMBOL
