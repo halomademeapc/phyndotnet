@@ -77,12 +77,15 @@ namespace PhyndLogic
 
         private async Task<int> GetNextMove(State s)
         {
-            await EnsureScenariosCreated(s);
+            var normalized = s.Normalize();
+            var translatedState = new State(normalized.Select(n => n.Player));
+            await EnsureScenariosCreated(translatedState);
 
-            var moves = await GetAvailableMoves(s)
+            var moves = await GetAvailableMoves(translatedState)
                 .AsNoTracking()
                 .ToListAsync();
-            return SelectMove(moves).NextMove;
+            var translatedMove = SelectMove(moves).NextMove;
+            return normalized[translatedMove].OriginalIndex;
         }
 
         private async Task<Game> GetGame(Guid id)

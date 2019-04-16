@@ -14,7 +14,7 @@ namespace PhyndLogic
 
         public State() { }
 
-        public State(Player?[] positions) => _Positions = positions;
+        public State(IEnumerable<Player?> positions) => _Positions = positions.ToArray();
 
         public State(string serialized)
         {
@@ -77,9 +77,96 @@ namespace PhyndLogic
             return null;
         }
 
-        public State Normalize()
+        public TranslatedPosition[] GetTranslatedPositions() => _Positions
+            .Select((p, i) => new TranslatedPosition { Player = p, OriginalIndex = i })
+            .ToArray();
+
+        public TranslatedPosition[] Normalize()
         {
-            return this;
+            var options = new List<TranslatedPosition[]>();
+            var indexed = GetTranslatedPositions();
+
+            foreach (var i in Enumerable.Range(0, 4))
+            {
+                options.Add(indexed);
+                options.Add(FlipX(indexed));
+                options.Add(FlipY(indexed));
+                indexed = Rotate(indexed);
+            }
+
+            return options
+                .Select(o => new TranslationRank
+                {
+                    Translation = o,
+                    PlayerRank = RankTranslation(o, Player.Human),
+                    ComputerRank = RankTranslation(o, Player.Computer)
+                })
+                .OrderByDescending(r => r.ComputerRank)
+                .ThenBy(r => r.PlayerRank)
+                .Select(r => r.Translation)
+                .FirstOrDefault();
+        }
+
+        public int RankTranslation(TranslatedPosition[] source, Player player)
+        {
+            int score = 0;
+            if (player == Player.Computer)
+            {
+                int maxScore = source.Count() + 1;
+                for (int i = 0; i < source.Count(); i++)
+                {
+                    if (source[i].Player == Player.Computer)
+                        score += maxScore - i;
+                }
+            }
+            else if (player == Player.Human)
+            {
+                for (int i = 0; i < source.Count(); i++)
+                {
+                    if (source[i].Player == Player.Human)
+                        score += i;
+                }
+            }
+            return score;
+        }
+
+        public TranslatedPosition[] FlipX(TranslatedPosition[] source)
+        {
+            var result = new List<TranslatedPosition>();
+            for (int y = 0; y < SIDE_SIZE; y++)
+            {
+                for (int x = SIDE_SIZE - 1; x >= 0; x--)
+                {
+                    result.Add(source[(x) + (y * SIDE_SIZE)]);
+                }
+            }
+            return result.ToArray();
+        }
+
+        public TranslatedPosition[] FlipY(TranslatedPosition[] source)
+        {
+            var result = new List<TranslatedPosition>();
+            for (int y = SIDE_SIZE - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < SIDE_SIZE; x++)
+                {
+                    result.Add(source[x + (y * SIDE_SIZE)]);
+                }
+            }
+            return result.ToArray();
+        }
+
+        public TranslatedPosition[] Rotate(TranslatedPosition[] source)
+        {
+            var result = new List<TranslatedPosition>();
+            for (int x = SIDE_SIZE - 1; x >= 0; x--)
+            {
+                for (int y = 0; y < SIDE_SIZE; y++)
+                {
+                    result.Add(source[x + (y * SIDE_SIZE)]);
+                }
+            }
+            return result.ToArray();
         }
 
         public bool ShouldEnd() => GetWinner().HasValue || !AvailableIndices.Any();

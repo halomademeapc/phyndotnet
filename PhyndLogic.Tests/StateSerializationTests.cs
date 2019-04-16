@@ -1,5 +1,4 @@
 using PhyndData;
-using System;
 using Xunit;
 
 namespace PhyndLogic.Tests
