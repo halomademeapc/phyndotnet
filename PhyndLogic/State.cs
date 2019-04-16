@@ -82,6 +82,8 @@ namespace PhyndLogic
             return this;
         }
 
+        public bool ShouldEnd() => GetWinner().HasValue || !AvailableIndices.Any();
+
         private bool AreMatch(IEnumerable<Player?> players) => !players.Any(p => !p.HasValue)
             && (!players.Any(p => p.Value == Player.Computer) || !players.Any(p => p.Value == Player.Human));
 
