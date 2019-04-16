@@ -14,6 +14,8 @@ namespace PhyndLogic
 
         public State() { }
 
+        public State(Player?[] positions) => _Positions = positions;
+
         public State(string serialized)
         {
             serialized = serialized.ToUpper();
@@ -86,8 +88,8 @@ namespace PhyndLogic
         private char PlayerToChar(Player? player) => !player.HasValue
             ? NULL_SYMBOL
             : player.Value == Player.Computer
-                ? HUMAN_SYMBOL
-                : COMPUTER_SYMBOL;
+                ? COMPUTER_SYMBOL
+                : HUMAN_SYMBOL;
 
         private Player? CharToPlayer(char c)
         {
