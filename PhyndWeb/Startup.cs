@@ -31,7 +31,7 @@ namespace PhyndWeb
 
             services.Configure<LearningConfiguration>(Configuration.GetSection("Learning"));
 
-            services.AddSingleton<WeatherForecastService>();
+            services.AddScoped<StatsService>();
             services.AddScoped<MoveService>();
 
             services.AddDbContext<PhyndContext>(o => o.UseSqlite("Data Source=Phynd.db"));

@@ -14,11 +14,15 @@
                                 <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed waves-effect" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
                                     @if (p == PhyndData.Player.Human)
                                     {
-                                        <i class="far fa-circle"></i>
+                                        <div class="iconHolder">
+                                            <i class="mdi mdi-circle-outline"></i>
+                                        </div>
                                     }
                                     else if (p == PhyndData.Player.Computer)
                                     {
-                                        <i class="fas fa-times"></i>
+                                        <div class="iconHolder">
+                                            <i class="mdi mdi-close"></i>
+                                        </div>
                                     }
                                 </td>
                             }
@@ -43,14 +47,18 @@
                                         {
                                             var index = x + (SIDE_SIZE * y);
                                             var p = state.Positions[index];
-                                            <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
+                                            <td class="boarditem @(!p.HasValue ? "unclaimed" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
                                                 @if (p == PhyndData.Player.Human)
                                                 {
-                                                    <i class="far fa-circle"></i>
+                                                    <div class="iconHolder">
+                                                        <i class="mdi mdi-circle-outline"></i>
+                                                    </div>
                                                 }
                                                 else if (p == PhyndData.Player.Computer)
                                                 {
-                                                    <i class="fas fa-times"></i>
+                                                    <div class="iconHolder">
+                                                        <i class="mdi mdi-close"></i>
+                                                    </div>
                                                 }
                                             </td>
                                         }
