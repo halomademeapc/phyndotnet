@@ -11,7 +11,7 @@
                             {
                                 var index = x + (SIDE_SIZE * y);
                                 var p = state.Positions[index];
-                                <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
+                                <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed waves-effect" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
                                     @if (p == PhyndData.Player.Human)
                                     {
                                         <i class="far fa-circle"></i>

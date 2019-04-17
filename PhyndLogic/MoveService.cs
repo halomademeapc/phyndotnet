@@ -122,6 +122,10 @@ namespace PhyndLogic
             var translatedState = new State(normalized.Select(n => n.Player));
             await EnsureScenariosCreated(translatedState);
 
+            var winningMove = GetWinningMove(s);
+            if (winningMove.HasValue)
+                return winningMove.Value;
+
             var moves = await GetAvailableMoves(translatedState)
                 .AsNoTracking()
                 .ToListAsync();
@@ -206,6 +210,19 @@ namespace PhyndLogic
                     return o;
             }
             return options.OrderByDescending(o => o.Rank).First();
+        }
+
+        private int? GetWinningMove(State s)
+        {
+            var originalSnapshot = s.ToString();
+            foreach (var i in s.AvailableIndices)
+            {
+                var simulation = new State(originalSnapshot);
+                simulation.PlayPosition(Player.Computer, i);
+                if (simulation.GetWinner() == Player.Computer)
+                    return i;
+            }
+            return null;
         }
     }
 }
