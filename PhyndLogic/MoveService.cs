@@ -21,12 +21,29 @@ namespace PhyndLogic
             config = options.Value;
         }
 
-        public async Task<Guid> StartGame()
+        public async Task<Tuple<Guid, State>> StartGame()
         {
             var game = new Game();
             db.Games.Add(game);
             await db.SaveChangesAsync();
-            return game.Id;
+            var state = new State();
+
+            // 50% chance of starting 1st
+            if (rng.NextDouble() > 0.5)
+            {
+                var compMove = await GetNextMove(state);
+                state.PlayPosition(Player.Computer, compMove);
+                db.Moves.Add(new Move
+                {
+                    GameId = game.Id,
+                    Player = Player.Computer,
+                    Position = compMove,
+                    Progress = 1
+                });
+                await db.SaveChangesAsync();
+            }
+
+            return new Tuple<Guid, State>(game.Id, state);
         }
 
         public async Task<State> GetGameState(Guid gameId)

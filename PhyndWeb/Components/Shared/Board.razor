@@ -80,7 +80,7 @@
                         Thanks for playing! Your contribution probably won't help mankind's advancement,
                         but hopefully it was at least a little fun.
                     </p>
-                    <a class="btn btn-primary waves-effect waves-light" href="/play/new">Play again</a>
+                    <a class="btn btn-primary waves-effect waves-light" onclick="@Reset">Play again</a>
                 </div>
             </div>
         }
@@ -98,12 +98,19 @@
 
     protected override async Task OnInitAsync()
     {
-        id = await moveService.StartGame();
+        await Reset();
     }
 
     async Task PlayMove(int index)
     {
-        if (!state.ShouldEnd())
+        if (!state.ShouldEnd() && state.AvailableIndices.Contains(index))
             state = await moveService.Play(id, index);
+    }
+
+    async Task Reset()
+    {
+        var result = await moveService.StartGame();
+        id = result.Item1;
+        state = result.Item2;
     }
 }
