@@ -21,6 +21,22 @@ namespace PhyndLogic
             config = options.Value;
         }
 
+        public async Task<Guid> StartGame()
+        {
+            var game = new Game();
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+            return game.Id;
+        }
+
+        public async Task<State> GetGameState(Guid gameId)
+        {
+            var game = await GetGame(gameId);
+            var state = new State();
+            game.Moves.ToList().ForEach(m => state.PlayPosition(m.Player, m.Position));
+            return state;
+        }
+
         public async Task<State> Play(Guid gameId, int index)
         {
             var game = await GetGame(gameId);
@@ -49,6 +65,8 @@ namespace PhyndLogic
             });
 
             await db.SaveChangesAsync();
+            if (state.ShouldEnd())
+                await HandleGameEnd(gameId, state.GetWinner() == Player.Computer);
             return state;
         }
 

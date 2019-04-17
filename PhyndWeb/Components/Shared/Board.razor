@@ -1,0 +1,31 @@
+﻿<div>
+    @for (int y = 0; y < SIDE_SIZE; y++)
+    {
+        <div>
+            row
+            @for (int x = 0; x < SIDE_SIZE; x++)
+            {
+                var index = x + (SIDE_SIZE * y);
+                <button onclick="@(() => PlayMove(index))">@state.Positions[index]?.ToString() :)</button>
+            }
+        </div>
+    }
+</div>
+
+@inject PhyndLogic.MoveService moveService
+@functions{
+    [Parameter]
+    Guid id { get; set; } = Guid.Empty;
+    State state = new State();
+    const int SIDE_SIZE = 3;
+
+    protected override async Task OnInitAsync()
+    {
+        id = await moveService.StartGame();
+    }
+
+    async Task PlayMove(int index)
+    {
+        state = await moveService.Play(id, index);
+    }
+}

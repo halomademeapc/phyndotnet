@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PhyndData;
+using PhyndLogic;
 using PhyndWeb.Components;
 using PhyndWeb.Services;
 
@@ -21,6 +22,7 @@ namespace PhyndWeb
             services.AddRazorComponents();
 
             services.AddSingleton<WeatherForecastService>();
+            services.AddScoped<MoveService>();
 
             services.AddDbContext<PhyndContext>(o => o.UseSqlite("Data Source=Phynd.db"));
         }
