@@ -133,3 +133,57 @@ app {
         display: block;
     }
 }
+
+
+.boarditem {
+    font-size: 3em;
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-block;
+    padding: .1em;
+    background-color: #DDD;
+    margin: .1em;
+    border-radius: .1em;
+    text-align: center;
+    transition: all .15s ease;
+}
+
+.board {
+    margin: auto;
+}
+
+.ajaxboard {
+    text-align: center;
+}
+
+.naughts {
+    background-color: #1A237E;
+}
+
+.crosses {
+    background-color: #D84315;
+}
+
+.naughts, .crosses {
+    color: white;
+}
+
+.boarditem svg {
+    display: block;
+    margin: auto;
+    margin-top: .15em;
+}
+
+.unclaimed {
+    cursor: pointer;
+}
+
+.unclaimed:hover {
+    background-color: #AAA;
+    box-shadow: .05em .05em .6em grey;
+    transform: perspective(500px) translateZ(20px);
+}
+
+.darken {
+    background-color: rgba(0,0,0,0.04)
+}

@@ -1,16 +1,93 @@
-﻿<div>
-    @for (int y = 0; y < SIDE_SIZE; y++)
-    {
-        <div>
-            row
-            @for (int x = 0; x < SIDE_SIZE; x++)
-            {
-                var index = x + (SIDE_SIZE * y);
-                <button onclick="@(() => PlayMove(index))">@state.Positions[index]?.ToString() :)</button>
-            }
-        </div>
-    }
+﻿<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 mb-4">
+        @if (!state.ShouldEnd())
+        {
+            <table class="board">
+                <tbody>
+                    @for (int y = 0; y < SIDE_SIZE; y++)
+                    {
+                        <tr>
+                            @for (int x = 0; x < SIDE_SIZE; x++)
+                            {
+                                var index = x + (SIDE_SIZE * y);
+                                var p = state.Positions[index];
+                                <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
+                                    @if (p == PhyndData.Player.Human)
+                                    {
+                                        <i class="far fa-circle"></i>
+                                    }
+                                    else if (p == PhyndData.Player.Computer)
+                                    {
+                                        <i class="fas fa-times"></i>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <!--Card-->
+            <div class="card card-cascade narrower">
+
+                <div class="view overlay">
+                    <div class="ajaxBoard darken text-center">
+                        <table class="board">
+                            <tbody>
+                                @for (int y = 0; y < SIDE_SIZE; y++)
+                                {
+                                    <tr>
+                                        @for (int x = 0; x < SIDE_SIZE; x++)
+                                        {
+                                            var index = x + (SIDE_SIZE * y);
+                                            var p = state.Positions[index];
+                                            <td onclick="@(() => PlayMove(index))" class="boarditem @(!p.HasValue ? "unclaimed" : (p.Value == PhyndData.Player.Computer ? "crosses" : "naughts"))">
+                                                @if (p == PhyndData.Player.Human)
+                                                {
+                                                    <i class="far fa-circle"></i>
+                                                }
+                                                else if (p == PhyndData.Player.Computer)
+                                                {
+                                                    <i class="fas fa-times"></i>
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h4 class="card-title">
+                        @switch (state.GetWinner())
+                        {
+                            case PhyndData.Player.Computer:
+                                <text>phÿnd wins!</text>
+                                break;
+                            case PhyndData.Player.Human:
+                                <text>You won!</text>
+                                break;
+                            default:
+                                <text>The game ended in a draw.</text>
+                                break;
+                        }
+                    </h4>
+                    <p class="card-text">
+                        Thanks for playing! Your contribution probably won't help mankind's advancement,
+                        but hopefully it was at least a little fun.
+                    </p>
+                    <a class="btn btn-primary waves-effect waves-light" href="/play/new">Play again</a>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+
 
 @inject PhyndLogic.MoveService moveService
 @functions{
@@ -26,6 +103,7 @@
 
     async Task PlayMove(int index)
     {
-        state = await moveService.Play(id, index);
+        if (!state.ShouldEnd())
+            state = await moveService.Play(id, index);
     }
 }

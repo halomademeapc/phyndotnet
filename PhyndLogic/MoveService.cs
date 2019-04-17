@@ -43,6 +43,9 @@ namespace PhyndLogic
 
             var weights = ReconstructGame(game.Moves);
             var state = weights.Any() ? new State(weights.Last().Scenario) : new State();
+            var lastMove = game.Moves.OrderByDescending(m => m.Progress).FirstOrDefault();
+            if (lastMove != null)
+                state.PlayPosition(lastMove.Player, lastMove.Position);
             var moveCount = game.Moves.Select(m => m.Progress).DefaultIfEmpty(0).Max() + 1;
 
             state.PlayPosition(Player.Human, index);
@@ -54,15 +57,18 @@ namespace PhyndLogic
                 Progress = moveCount
             });
 
-            var compMove = await GetNextMove(state);
-            state.PlayPosition(Player.Computer, compMove);
-            db.Moves.Add(new Move
+            if (!state.ShouldEnd())
             {
-                GameId = gameId,
-                Player = Player.Computer,
-                Position = compMove,
-                Progress = ++moveCount
-            });
+                var compMove = await GetNextMove(state);
+                state.PlayPosition(Player.Computer, compMove);
+                db.Moves.Add(new Move
+                {
+                    GameId = gameId,
+                    Player = Player.Computer,
+                    Position = compMove,
+                    Progress = ++moveCount
+                });
+            }
 
             await db.SaveChangesAsync();
             if (state.ShouldEnd())
