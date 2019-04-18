@@ -11,3 +11,4 @@ script:
 - sudo snap alias dotnet-sdk.dotnet dotnet
 - dotnet restore
 - dotnet build
+- dotnet test PhyndLogic.Tests\PhyndLogic.Tests.csproj
