@@ -199,7 +199,7 @@ namespace PhyndLogic
 
         private Weight SelectMove(IEnumerable<Weight> options)
         {
-            var max = options.Sum(m => m.Rank);
+            var max = options.Sum(m => m.Rank + .2);
             var target = rng.NextDouble() * max;
 
             float progress = 0;
