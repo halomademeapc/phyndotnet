@@ -21,12 +21,48 @@ namespace PhyndLogic
             config = options.Value;
         }
 
+        public async Task<Tuple<Guid, State>> StartGame()
+        {
+            var game = new Game();
+            db.Games.Add(game);
+            await db.SaveChangesAsync();
+            var state = new State();
+
+            // 50% chance of starting 1st
+            if (rng.NextDouble() > 0.5)
+            {
+                var compMove = await GetNextMove(state);
+                state.PlayPosition(Player.Computer, compMove);
+                db.Moves.Add(new Move
+                {
+                    GameId = game.Id,
+                    Player = Player.Computer,
+                    Position = compMove,
+                    Progress = 1
+                });
+                await db.SaveChangesAsync();
+            }
+
+            return new Tuple<Guid, State>(game.Id, state);
+        }
+
+        public async Task<State> GetGameState(Guid gameId)
+        {
+            var game = await GetGame(gameId);
+            var state = new State();
+            game.Moves.ToList().ForEach(m => state.PlayPosition(m.Player, m.Position));
+            return state;
+        }
+
         public async Task<State> Play(Guid gameId, int index)
         {
             var game = await GetGame(gameId);
 
             var weights = ReconstructGame(game.Moves);
             var state = weights.Any() ? new State(weights.Last().Scenario) : new State();
+            var lastMove = game.Moves.OrderByDescending(m => m.Progress).FirstOrDefault();
+            if (lastMove != null)
+                state.PlayPosition(lastMove.Player, lastMove.Position);
             var moveCount = game.Moves.Select(m => m.Progress).DefaultIfEmpty(0).Max() + 1;
 
             state.PlayPosition(Player.Human, index);
@@ -38,17 +74,22 @@ namespace PhyndLogic
                 Progress = moveCount
             });
 
-            var compMove = await GetNextMove(state);
-            state.PlayPosition(Player.Computer, compMove);
-            db.Moves.Add(new Move
+            if (!state.ShouldEnd())
             {
-                GameId = gameId,
-                Player = Player.Computer,
-                Position = compMove,
-                Progress = ++moveCount
-            });
+                var compMove = await GetNextMove(state);
+                state.PlayPosition(Player.Computer, compMove);
+                db.Moves.Add(new Move
+                {
+                    GameId = gameId,
+                    Player = Player.Computer,
+                    Position = compMove,
+                    Progress = ++moveCount
+                });
+            }
 
             await db.SaveChangesAsync();
+            if (state.ShouldEnd())
+                await HandleGameEnd(gameId, state.GetWinner() == Player.Computer);
             return state;
         }
 
@@ -77,12 +118,19 @@ namespace PhyndLogic
 
         private async Task<int> GetNextMove(State s)
         {
-            await EnsureScenariosCreated(s);
+            var normalized = s.Normalize();
+            var translatedState = new State(normalized.Select(n => n.Player));
+            await EnsureScenariosCreated(translatedState);
 
-            var moves = await GetAvailableMoves(s)
+            var winningMove = GetWinningMove(s);
+            if (winningMove.HasValue)
+                return winningMove.Value;
+
+            var moves = await GetAvailableMoves(translatedState)
                 .AsNoTracking()
                 .ToListAsync();
-            return SelectMove(moves).NextMove;
+            var translatedMove = SelectMove(moves).NextMove;
+            return normalized[translatedMove].OriginalIndex;
         }
 
         private async Task<Game> GetGame(Guid id)
@@ -162,6 +210,19 @@ namespace PhyndLogic
                     return o;
             }
             return options.OrderByDescending(o => o.Rank).First();
+        }
+
+        private int? GetWinningMove(State s)
+        {
+            var originalSnapshot = s.ToString();
+            foreach (var i in s.AvailableIndices)
+            {
+                var simulation = new State(originalSnapshot);
+                simulation.PlayPosition(Player.Computer, i);
+                if (simulation.GetWinner() == Player.Computer)
+                    return i;
+            }
+            return null;
         }
     }
 }

@@ -1,13 +1,20 @@
-﻿@page "/"
+@page "/"
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<div>
-    <h2>Testing</h2>
-    @{
-        var state = new State("--xoxo---");
-    }
-    @Newtonsoft.Json.JsonConvert.SerializeObject(state)
+<div class="container mt-3">
+    <nav class="breadcrumb">
+        <span class="breadcrumb-item active">phÿnd</span>
+    </nav>
+    <div class="jumbotron">
+        <div class="d-flex align-items-start flex-wrap">
+            <h1 class="h1-responsive mr-2">Welcome to phÿnd</h1>
+            <span class="badge badge-primary annoy-throb mb-2">Now with less garbage programming!</span>
+        </div>
+        <p class="lead">A rudimentary machine learning game of Tic-Tac-Toe</p>
+        <hr class="my-2">
+        <p>
+            Play a few rounds and help our robot overlords become smarter.
+        </p>
+        <a class="btn btn-outline-primary waves-effect btn-lg" href="/About">See how it works</a>
+        <a class="btn btn-primary btn-lg waves-effect" role="button" href="/Play">Play now</a>
+    </div>
 </div>
