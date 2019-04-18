@@ -126,6 +126,10 @@ namespace PhyndLogic
             if (winningMove.HasValue)
                 return winningMove.Value;
 
+            var blockingMove = GetBlockingMove(s);
+            if (blockingMove.HasValue)
+                return blockingMove.Value;
+
             var moves = await GetAvailableMoves(translatedState)
                 .AsNoTracking()
                 .ToListAsync();
@@ -220,6 +224,19 @@ namespace PhyndLogic
                 var simulation = new State(originalSnapshot);
                 simulation.PlayPosition(Player.Computer, i);
                 if (simulation.GetWinner() == Player.Computer)
+                    return i;
+            }
+            return null;
+        }
+
+        private int? GetBlockingMove(State s)
+        {
+            var originalSnapshot = s.ToString();
+            foreach (var i in s.AvailableIndices)
+            {
+                var simulation = new State(originalSnapshot);
+                simulation.PlayPosition(Player.Human, i);
+                if (simulation.GetWinner() == Player.Human)
                     return i;
             }
             return null;
