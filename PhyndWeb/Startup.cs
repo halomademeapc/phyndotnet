@@ -52,7 +52,7 @@ namespace PhyndWeb
 
             db.Database.Migrate();
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting(routes =>
